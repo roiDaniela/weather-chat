@@ -1,4 +1,9 @@
+"use strict";
 
+/**
+ * my impletation to java function String.format(str)
+ * @param {string} string to format
+ */
 String.myFormat = function(format) {
     var args = Array.prototype.slice.call(arguments, 1);
     return format.replace(/{(\d+)}/g, function(match, number) {
@@ -8,7 +13,11 @@ String.myFormat = function(format) {
             ;
     });
 };
-
+/* Private methods*/
+/**
+ * returns regular timestamp converted from unix timestamp
+ * @param {string} string of unix type
+ */
 var _getDate = function(unixtimestamp){
     // Months array
     var months_arr = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
@@ -40,21 +49,9 @@ var _getDate = function(unixtimestamp){
     return convdataTime;
 }
 
-var _getTime = function(unix_timestamp){
-    var date = new Date(unix_timestamp*1000);
-// Hours part from the timestamp
-    var hours = date.getHours();
-// Minutes part from the timestamp
-    var minutes = "0" + date.getMinutes();
-// Seconds part from the timestamp
-    var seconds = "0" + date.getSeconds();
-
-// Will display time in 10:30:23 format
-    var formattedTime = hours + ':' + minutes.substr(-2) + ':' + seconds.substr(-2);
-
-    return formattedTime;
-}
-
+/**
+ * HTML objects
+ */
 var htmlBlock = '<div class="shadow-lg p-3 mb-5 bg-white rounded">'+
     '<button class="btn btn-danger float-right my-class" type="button">' +
     '<i class="fa fa-trash" aria-hidden="true"></i>' +
@@ -82,31 +79,34 @@ var getWeather = function(city){
     $.get({
             url:"http://api.openweathermap.org/data/2.5/weather?q="+city+"&units=metric&appid=d703871f861842b79c60988ccf3b17ec",
             success: function(data){
+                // extract the details from data object
                 var temp = data.main.temp;
                 var description = data.weather[0].description;
                 var time = _getDate(data.dt);
 
                 $("#box-container").append(String.myFormat(htmlBlock, city, temp, time,description));
 
+                // attaches click event handlers to remnove this block when click
                 $( ".my-class" ).bind( "click", function(event) {
                     $(this).closest( "div" ).remove();
                 });
-
-                // $( ".my-add-comment" ).bind( "click", function(event) {
-                //     $(".comments-list").append(String.myFormat(commentTag, city))
-                //     $(this).closest("div").find('input').prop("disabled",true);
-                //     $(this).prop("disabled",true);
-                // });
             }
         }
     );
 };
 
+/* Jquery methods*/
+/**
+ * get temperture when click getTemp btn
+ */
 $("#get-temp").click(function(){
-    city = $("#enter-city").val();
+    var city = $("#enter-city").val();
     getWeather(city);
 });
 
+/**
+ * add comment btn
+ */
 $( "#box-container" ).on( "click", ".my-add-comment", function(event) {
     // var city = $(this).closest("h1").text();
     $(".comments-list").append(String.myFormat(commentTag, city))
